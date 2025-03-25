@@ -1,81 +1,74 @@
 // src/app/auth/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import Loading from '@/components/ui/loading';
 
 export default function AuthPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    // If already authenticated, redirect to callback URL
+    if (isAuthenticated) {
+      router.push(callbackUrl);
+    }
+  }, [isAuthenticated, router, callbackUrl]);
+
+  const handleSignIn = async () => {
     setIsLoading(true);
-    
-    // Mock authentication - will be replaced with real auth later
-    setTimeout(() => {
+    try {
+      await login();
+    } catch (error) {
+      console.error('Authentication error:', error);
+    } finally {
       setIsLoading(false);
-      router.push('/dashboard');
-    }, 1500);
+    }
   };
+
+  if (authLoading) {
+    return (
+      <div className="container mx-auto px-4 py-12 flex justify-center">
+        <Loading message="Checking authentication status..." />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return (
+      <div className="container mx-auto px-4 py-12 flex justify-center">
+        <Loading message="Redirecting..." />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+      <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
         <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
         
-        <form onSubmit={handleSignIn} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
-              required
-            />
-          </div>
-          
+        <div className="space-y-4">
           <button
-            type="submit"
+            onClick={handleSignIn}
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors disabled:opacity-50"
+            className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white py-2 px-4 rounded-md transition-colors disabled:opacity-50"
           >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            {isLoading ? 'Signing in...' : 'Sign in with Auth0'}
           </button>
           
-          <div className="text-center text-sm text-gray-500">
-            <p>
-              Don't have an account?{' '}
-              <Link href="/auth/signup" className="text-blue-600 hover:text-blue-800">
-                Sign Up
-              </Link>
-            </p>
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>By signing in, you agree to our Terms of Service and Privacy Policy.</p>
           </div>
-        </form>
+        </div>
         
         <div className="mt-6 text-center">
-          <Link href="/" className="text-blue-600 hover:text-blue-800">
+          <Link href="/" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
             Back to Home
           </Link>
         </div>

@@ -2,10 +2,9 @@
 import React from 'react';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import Providers from '@/components/providers';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import { ToastProvider } from '@/contexts/ToastContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,15 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 dark:text-gray-100`}>
-        <ThemeProvider>
-          <ToastProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </ToastProvider>
-        </ThemeProvider>
+    <html lang="en">
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
+        <Providers>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
