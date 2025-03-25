@@ -1,0 +1,122 @@
+ai-product-development-assistant/
+├── .env.local                  # Environment variables (local development)
+├── .env.example                # Example environment file
+├── .eslintrc.json              # ESLint configuration
+├── .gitignore                  # Git ignore file
+├── package.json                # Project dependencies and scripts
+├── tsconfig.json               # TypeScript configuration
+├── next.config.js              # Next.js configuration
+├── middleware.ts               # NextJS middleware for auth and routing
+│
+├── public/                     # Static assets
+│   ├── favicon.ico
+│   ├── logo.svg
+│   └── images/
+│
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── api/                # API routes
+│   │   │   ├── auth/           # Auth-related API endpoints
+│   │   │   │   └── [...nextauth]/
+│   │   │   │       └── route.ts
+│   │   │   ├── claude/         # Claude API integration
+│   │   │   │   └── route.ts
+│   │   │   ├── masterplan/     # Masterplan generation endpoints
+│   │   │   │   └── route.ts
+│   │   │   ├── jira/           # Jira integration endpoints
+│   │   │   │   └── route.ts
+│   │   │   └── confluence/     # Confluence integration endpoints
+│   │   │       └── route.ts
+│   │   │
+│   │   ├── auth/               # Auth-related pages
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── dashboard/          # Dashboard pages
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── masterplan/         # Masterplan-related pages
+│   │   │   ├── [id]/           # Dynamic route for specific masterplan
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── edit/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── review/
+│   │   │   │       └── page.tsx
+│   │   │   └── page.tsx        # Masterplan listing page
+│   │   │
+│   │   ├── conversation/       # Conversation interface pages
+│   │   │   ├── [id]/           # Dynamic route for specific conversation
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx        # New conversation page
+│   │   │
+│   │   ├── layout.tsx          # Root layout
+│   │   └── page.tsx            # Home page
+│   │
+│   ├── components/             # Reusable components
+│   │   ├── ui/                 # Basic UI components
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── input.tsx
+│   │   │   └── dropdown.tsx
+│   │   │
+│   │   ├── layout/             # Layout components
+│   │   │   ├── header.tsx
+│   │   │   ├── sidebar.tsx
+│   │   │   └── footer.tsx
+│   │   │
+│   │   ├── auth/               # Auth-related components
+│   │   │   ├── login-button.tsx
+│   │   │   └── user-profile.tsx
+│   │   │
+│   │   ├── conversation/       # Conversation interface components
+│   │   │   ├── chat-interface.tsx
+│   │   │   ├── message-list.tsx
+│   │   │   ├── message-input.tsx
+│   │   │   └── ai-response.tsx
+│   │   │
+│   │   └── masterplan/         # Masterplan-related components
+│   │       ├── masterplan-form.tsx
+│   │       ├── masterplan-preview.tsx
+│   │       ├── masterplan-list.tsx
+│   │       ├── review-panel.tsx
+│   │       ├── comment-system.tsx
+│   │       └── version-control.tsx
+│   │
+│   ├── hooks/                  # Custom React hooks
+│   │   ├── useAuth.ts
+│   │   ├── useConversation.ts
+│   │   ├── useMasterplan.ts
+│   │   └── useClaudeApi.ts
+│   │
+│   ├── lib/                    # Utility functions and libraries
+│   │   ├── auth/               # Authentication utilities
+│   │   │   └── auth0.ts
+│   │   │
+│   │   ├── api/                # API client utilities
+│   │   │   ├── claude.ts       # Claude API client
+│   │   │   ├── jira.ts         # Jira API client
+│   │   │   └── confluence.ts   # Confluence API client
+│   │   │
+│   │   └── masterplan/         # Masterplan generation utilities
+│   │       ├── generator.ts
+│   │       ├── formatter.ts
+│   │       ├── templates.ts
+│   │       └── export.ts
+│   │
+│   ├── types/                  # TypeScript type definitions
+│   │   ├── auth.ts
+│   │   ├── conversation.ts
+│   │   ├── masterplan.ts
+│   │   └── api.ts
+│   │
+│   ├── styles/                 # Global styles
+│   │   └── globals.css
+│   │
+│   └── contexts/               # React context providers
+│       ├── AuthContext.tsx
+│       └── ConversationContext.tsx
+│
+└── tests/                      # Test files
+    ├── components/
+    ├── lib/
+    └── api/
