@@ -1,0 +1,149 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  emailVerified DateTime?
+  image         String?
+  role          String         @default("user")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  conversations Conversation[]
+  masterplans   Masterplan[]
+  comments      Comment[]
+  mentions      Mention[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  title     String
+  userId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+  masterplans Masterplan[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String       @db.Text
+  sender         String       // 'user' or 'assistant'
+  conversationId String
+  userId         String?
+  timestamp      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Masterplan {
+  id             String            @id @default(cuid())
+  title          String
+  conversationId String
+  userId         String
+  version        String            @default("1.0")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  conversation   Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id])
+  sections       MasterplanSection[]
+  formats        MasterplanFormat[]
+  comments       Comment[]
+  versions       MasterplanVersion[]
+}
+
+model MasterplanSection {
+  id           String     @id @default(cuid())
+  title        String
+  content      String     @db.Text
+  level        Int
+  order        Int
+  masterplanId String
+  masterplan   Masterplan @relation(fields: [masterplanId], references: [id], onDelete: Cascade)
+  comments     Comment[]
+}
+
+model MasterplanFormat {
+  id           String     @id @default(cuid())
+  type         String     // 'markdown', 'pdf', 'confluence', 'jira'
+  content      String     @db.Text
+  masterplanId String
+  masterplan   Masterplan @relation(fields: [masterplanId], references: [id], onDelete: Cascade)
+}
+
+model MasterplanVersion {
+  id           String     @id @default(cuid())
+  version      String
+  masterplanId String
+  userId       String
+  createdAt    DateTime   @default(now())
+  changelog    String?    @db.Text
+  masterplan   Masterplan @relation(fields: [masterplanId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id          String            @id @default(cuid())
+  content     String            @db.Text
+  userId      String
+  sectionId   String
+  masterplanId String
+  category    CommentCategory?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section     MasterplanSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  masterplan  Masterplan        @relation(fields: [masterplanId], references: [id], onDelete: Cascade)
+  mentions    Mention[]
+}
+
+model Mention {
+  id        String   @id @default(cuid())
+  userId    String
+  commentId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+}
+
+enum CommentCategory {
+  CLARIFICATION
+  RISK
+  MODIFICATION
+  TECHNICAL
+}
