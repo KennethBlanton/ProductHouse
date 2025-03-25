@@ -1,15 +1,15 @@
 // src/app/conversation/[id]/page.tsx
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useState } from 'react';
+import { useToast } from '@/hooks/useToast';
 import { useConversation } from '@/hooks/useConversation';
 import { useMasterplan } from '@/hooks/useMasterplan';
-import { useToast } from '@/contexts/ToastContext';
-import TemplateSelector from '@/components/masterplan/template-selector';
-import { MasterplanTemplate } from '@/lib/masterplan/templates';
+import type { MasterplanTemplate } from '@/lib/masterplan/template';
 import Loading from '@/components/ui/loading';
+import TemplateSelector from '@/components/masterplan/template-selector';
 
 interface ConversationPageProps {
   params: {
@@ -56,12 +56,12 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     
     try {
       // Generate masterplan content with selected template
-      const content = await generateMasterplan(template.systemPrompt);
+      const content = await generateMasterplan();
       
       // Create masterplan with template sections
       const masterplan = await createMasterplan(
-        conversation?.id || params.id,
-        messages,
+        [conversation?.id || params.id],
+        content,
         conversation?.title || `Masterplan ${new Date().toLocaleDateString()}`,
         ['markdown', 'pdf']
       );
@@ -77,14 +77,14 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   const isLoading = conversationLoading || masterplanLoading;
 
   return (
-    <div className="container mx-auto px-4 py-4 h-[calc(100vh-144px)] flex flex-col">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <Link
-            href="/dashboard"
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mr-4"
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-6">
+        <div className="flex items-center gap-4 mb-4">
+          <Link 
+            href="/conversation" 
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
-            ← Back to Dashboard
+            ←
           </Link>
           <h1 className="text-xl font-semibold inline-block">
             {conversation?.title || `Conversation ${params.id}`}

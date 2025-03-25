@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { masterplanTemplates, MasterplanTemplate } from '@/lib/masterplan/templates';
+import { masterplanTemplates, MasterplanTemplate } from '@/lib/masterplan/template';
 
 interface TemplateSelectorProps {
   onSelect: (template: MasterplanTemplate) => void;
